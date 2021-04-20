@@ -48,7 +48,7 @@ echo "Copying files to git repo. Invisible files must be handled differently tha
 # Include dot files for source filepath
 mkdir -p $CLONE_DIR/$INPUT_DESTINATION_FOLDER
 
-if test -f "$INPUT_SOURCE_FILE_PATH"/*; then
+if [ $(find "$INPUT_SOURCE_FILE_PATH" -type f | wc -l) -gt 0 ]; then
   cp -r "$INPUT_SOURCE_FILE_PATH"/* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
 else
   echo "WARNING: No visible files exist"
