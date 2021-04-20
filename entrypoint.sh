@@ -26,6 +26,9 @@ TARGET_BRANCH_EXISTS=true
 
 CLONE_DIR=$(mktemp -d)
 
+echo "Using HTTP 1.1"
+git config --global http.version HTTP/1.1
+
 echo "Clean up old references maybe"
 git remote prune origin
 
