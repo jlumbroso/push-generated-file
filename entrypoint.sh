@@ -62,12 +62,26 @@ else
   ssh-keyscan github.com >> ~/.ssh/known_hosts
   cat ~/.ssh/known_hosts
   
+  # ssh config to avoid push timeout
+  # https://bengsfort.github.io/articles/fixing-git-push-pull-timeout/
+  # https://docs.gitlab.com/ee/topics/git/troubleshooting_git.html#check-your-ssh-configuration
+  echo <<< EOL
+Host *
+  ServerAliveInterval 60
+  ServerAliveCountMax 5
+
+Host github.com
+    Hostname ssh.github.com
+    Port 443
+EOL >> ~/.ssh/config
+ 
   # set local file permissions
   chmod 700 ~/.ssh
+  chmod 644 ~/.ssh/config
   chmod 644 ~/.ssh/known_hosts
   chmod 600 ~/.ssh/id_key
   chmod 644 ~/.ssh/id_key.pub
-  
+
   { # try
     git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
   } || { # on no such remote branch, pull default branch instead
