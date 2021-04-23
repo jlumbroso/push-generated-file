@@ -50,6 +50,7 @@ else
   # ssh key
   mkdir -p ~/.ssh
   echo "$INPUT_SSH_KEY" > ~/.ssh/id_key
+  chmod u=rw,go= ~/.ssh/id_key
   ssh-keygen -y -f ~/.ssh/id_key > ~/.ssh/id_key.pub
   echo "Public key to be used: $(cat ~/.ssh/id_key.pub)"
   
