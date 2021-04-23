@@ -84,13 +84,15 @@ echo "Copying files to git repo. Invisible files must be handled differently tha
 mkdir -p $CLONE_DIR/$INPUT_DESTINATION_FOLDER
 
 if [ $(find "$INPUT_SOURCE_FILE_PATH" -type f | wc -l) -gt 0 ]; then
-  cp -r "$INPUT_SOURCE_FILE_PATH"/* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
+  ##cp -r "$INPUT_SOURCE_FILE_PATH"/* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
+  mv "$INPUT_SOURCE_FILE_PATH"/* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
 else
   echo "WARNING: No visible files exist"
 fi
 invisible_exists=false
 if test -f "$INPUT_SOURCE_FILE_PATH"/.??*; then
-  cp -r "$INPUT_SOURCE_FILE_PATH"/.??* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
+  ##cp -r "$INPUT_SOURCE_FILE_PATH"/.??* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
+  mv "$INPUT_SOURCE_FILE_PATH"/.??* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
 else
   echo "WARNING: No invisible/hidden (dot) files exist"
 fi
