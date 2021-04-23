@@ -22,6 +22,9 @@ inputs:
   author_email:
     description: '[Optional] Email for the commit. Default is author@no-reply...'
     required: false
+  ssh_key:
+    description: '[Optional] SSH private key to authenticate against the repo'
+    required: false
 runs:
   using: 'docker'
   image: 'Dockerfile'
