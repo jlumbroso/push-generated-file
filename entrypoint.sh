@@ -48,8 +48,9 @@ if [ -z "$INPUT_SSH_KEY" ]; then
   }
 else
   # ssh key
-  echo "$INPUT_SSH_KEY" > id_key
-  export GIT_SSH_COMMAND="ssh -i $(pwd)/id_key"
+  mkdir -p ~/.ssh
+  echo "$INPUT_SSH_KEY" > ~/id_key
+  export GIT_SSH_COMMAND="ssh -i ~/id_key"
   
   # known hosts
   touch ~/.ssh/known_hosts
