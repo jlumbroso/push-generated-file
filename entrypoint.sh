@@ -65,7 +65,7 @@ else
   # ssh config to avoid push timeout
   # https://bengsfort.github.io/articles/fixing-git-push-pull-timeout/
   # https://docs.gitlab.com/ee/topics/git/troubleshooting_git.html#check-your-ssh-configuration
-  echo <<< EOL
+  cat > ~/.ssh/config <<EOL
 Host *
   ServerAliveInterval 60
   ServerAliveCountMax 5
@@ -73,7 +73,7 @@ Host *
 Host github.com
     Hostname ssh.github.com
     Port 443
-EOL >> ~/.ssh/config
+EOL
  
   # set local file permissions
   chmod 700 ~/.ssh
