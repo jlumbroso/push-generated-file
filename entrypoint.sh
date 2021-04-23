@@ -49,8 +49,8 @@ if [ -z "$INPUT_SSH_KEY" ]; then
 else
   # ssh key
   mkdir -p ~/.ssh
-  echo "$INPUT_SSH_KEY" > ~/id_key
-  export GIT_SSH_COMMAND="ssh -i ~/id_key"
+  echo "$INPUT_SSH_KEY" > ~/.ssh/id_key
+  export GIT_SSH_COMMAND="ssh -vvvi ~/.ssh/id_key -o 'IdentitiesOnly yes'"
   
   # known hosts
   touch ~/.ssh/known_hosts
