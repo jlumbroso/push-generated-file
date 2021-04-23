@@ -52,10 +52,10 @@ else
   export GIT_SSH_COMMAND="ssh -i $(pwd)/id_key"
   
   { # try
-    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
   } || { # on no such remote branch, pull default branch instead
     echo "The input target branch does not already exist on the target repository. It will be created."
-    git clone --single-branch "git@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    git clone --single-branch "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
     TARGET_BRANCH_EXISTS=false
   }
 fi
