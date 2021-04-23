@@ -54,15 +54,18 @@ else
   ssh-keygen -y -f ~/.ssh/id_key > ~/.ssh/id_key.pub
   echo "Public key to be used: $(cat ~/.ssh/id_key.pub)"
   
-  export GIT_SSH_COMMAND="ssh -vvvi ~/.ssh/id_key -o 'IdentitiesOnly yes' -o UserKnownHostsFile='~/.ssh/known_hosts'"
+  export GIT_SSH_COMMAND="ssh -vvv -i ~/.ssh/id_scarlatti -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts"
   echo "GIT_SSH_COMMAND=$GIT_SSH_COMMAND"
   
   # known hosts
   touch ~/.ssh/known_hosts
   ssh-keyscan github.com >> ~/.ssh/known_hosts
   
-  # set permissions
-  chmod u=rw,go= ~/.ssh/id_key ~/.ssh/id_key.pub ~/.ssh/known_hosts
+  # set local file permissions
+  chmod 700 ~/.ssh
+  chmod 644 ~/.ssh/known_hosts
+  chmod 600 ~/.ssh/id_key
+  chmod 644 ~/.ssh/id_key.pub
   
   { # try
     git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
