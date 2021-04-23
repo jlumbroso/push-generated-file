@@ -22,8 +22,9 @@ inputs:
     description: "Folder or folders to create or use in destination repository."
     required: true
   target_branch:
-    description: "[Optional] set target branch name for the destination repository. Default is `main'."
+    description: "[Optional] set target branch name for the destination repository."
     required: false
+    default: "main"
   
   author:
     description: "[Optional] Name of the commit's author. Default is user name of account doing action."

@@ -18,6 +18,18 @@ Ideas:
 - describe that main motivation for SSH is more robust I/O?
 - tutorial to add deploy keys (generation, upload to repo as deploy key, upload to account or organization as secret, specify in parameters)
 
+## Destination repository and branch
+
+### Local repository (same as where the continuous integration is run)
+
+### External repository
+
+#### GitHub Personal Access Token
+
+#### SSH Private Deploy Key
+
+
+
 ## Original work
 - Forked from https://github.com/cpina/github-action-push-to-another-repository which, at the time, deleted the files in a target repository, then pushed a generated file into that blank repository.
 - Edits were made based on https://github.com/dmnemec/copy_file_to_another_repo_action which, at the time, pushed a copy of an already existing file to a directory in a target repository.

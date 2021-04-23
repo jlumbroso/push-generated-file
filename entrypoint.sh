@@ -4,11 +4,26 @@
 # - https://github.com/cpina/github-action-push-to-another-repository
 # - https://github.com/dmnemec/copy_file_to_another_repo_action
 
-set -e
-set -x
 
-echo "Start"
+# Informational prompt
+echo "**************************"
+echo "PUSH TO REPO GITHUB ACTION"
+echo "**************************"
+echo ""
+echo "Git version: $(git --version)"
+echo "SSH version: $(ssh --version)"
+echo ""
+echo ""
 
+
+# Work variables
+TARGET_BRANCH_EXISTS=true
+CLONE_DIR="$(mktemp -d)"
+VAR_GIT_MODE="https"
+
+
+echo "<> Start"
+echo "<> Processing input parameters"
 if [ -z "$INPUT_AUTHOR" ]
 then
   INPUT_AUTHOR="$GITHUB_ACTOR"
@@ -22,52 +37,93 @@ then
   INPUT_TARGET_BRANCH="main"
 fi
 
-TARGET_BRANCH_EXISTS=true
+# Determine whether we are in HTTPS or SSH mode
+echo "<> Detecting authentication mode"
+if [ ! -z "$INPUT_AUTH_SSH_KEY" ]
+then
+  VAR_GIT_MODE="ssh"
+  echo "SSH private key detected."
+  echo "=> Selecting 'ssh' authentication mode."
+else
+  if [ -z "$INPUT_AUTH_GITHUB_TOKEN"]
+  then
+    VAR_GIT_MODE="local"
+    echo "No SSH private key and no GitHub personal access token provided!"
+    echo "=> Defaulting to 'local' authentication mode."
+  else
+    VAR_GIT_MODE="https"
+    echo "GitHub Personal Access Token detected."
+    echo "=> Selecting 'https' authentication mode."
+  fi
+fi
 
-CLONE_DIR=$(mktemp -d)
 
-echo "Git version"
-git --version
+# See https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
+set -e  # exit immediately on error
+set -x  # echo all commands
 
-echo "Using HTTP 1.1"
-git config --global http.version HTTP/1.1
 
-echo "Clean up old references maybe"
-git remote prune origin
-
-echo "Cloning destination git repository"
-# Setup git
+# Configure Git generic
 git config --global user.email "$INPUT_AUTHOR_EMAIL"
 git config --global user.name "$INPUT_AUTHOR"
-# Clone branch matching the target branch name or default branch (master, main, etc)
-if [ -z "$INPUT_AUTH_SSH_KEY" ]; then
-  # username/password
-  { # try
-    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
-  } || { # on no such remote branch, pull default branch instead
-    echo "The input target branch does not already exist on the target repository. It will be created."
-    git clone --single-branch "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
-    TARGET_BRANCH_EXISTS=false
-  }
-else
-  # ssh key
+
+
+# Configuring Git for non-SSH
+
+if [ "${VAR_GIT_MODE}" = "https" ] || [ "${VAR_GIT_MODE}" = "local" ]
+then
+  # Prevent pushes of big number of files from timing out
+  echo "<> Configuring git to avoid hangs when pushing"
+
+  # Switch from HTTP2 -> HTTP1.1
+  # See https://stackoverflow.com/a/59474908/408734
+  echo "Using HTTP 1.1"
+  git config --global http.version HTTP/1.1
+
+  # Change POST buffer chunk size
+  # TODO: Set this to largest individual file size as per Atlassian recommendations
+  # See https://confluence.atlassian.com/bitbucketserverkb/git-push-fails-fatal-the-remote-end-hung-up-unexpectedly-779171796.html
+  echo "Using large POST buffer size"
+  git config --global http.postBuffer 157286400
+fi
+
+# Configuring SSH settings
+
+if [ "${VAR_GIT_MODE}" = "ssh" ]
+then
+  echo "<> Configuring SSH settings"
+
+  echo "  * Creating SSH configuration folder"
   mkdir -p ~/.ssh
+
+  echo "  * Storing provided SSH private key"
   echo "$INPUT_AUTH_SSH_KEY" > ~/.ssh/id_key
   chmod u=rw,go= ~/.ssh/id_key
+
+  echo "  * Attempting to generate public SSH key pair"
   ssh-keygen -y -f ~/.ssh/id_key > ~/.ssh/id_key.pub
-  echo "Public key to be used: $(cat ~/.ssh/id_key.pub)"
+
+  echo "  * Public key to be used: $(cat ~/.ssh/id_key.pub)"
+
+  # display visual fingerprint
+  ssh-keygen -lvf ~/.ssh/id_key.pub
   
+  echo "  * Configuring Git SSH command"
   export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_key -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts -o BatchMode=yes"
-  echo "GIT_SSH_COMMAND=$GIT_SSH_COMMAND"
+  echo "   GIT_SSH_COMMAND='$GIT_SSH_COMMAND'"
   
   # known hosts
+  echo "  * Creating local known hosts file"
   touch ~/.ssh/known_hosts
   ssh-keyscan github.com >> ~/.ssh/known_hosts
+  ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+  ssh-keyscan bitbucket.com >> ~/.ssh/known_hosts
   cat ~/.ssh/known_hosts
   
   # ssh config to avoid push timeout
-  # https://bengsfort.github.io/articles/fixing-git-push-pull-timeout/
-  # https://docs.gitlab.com/ee/topics/git/troubleshooting_git.html#check-your-ssh-configuration
+  echo "  * Creating SSH config file"
+  # See https://bengsfort.github.io/articles/fixing-git-push-pull-timeout/
+  # See https://docs.gitlab.com/ee/topics/git/troubleshooting_git.html#check-your-ssh-configuration
   cat > ~/.ssh/config <<EOL
 Host *
   ServerAliveInterval 60
@@ -79,22 +135,66 @@ Host github.com
 EOL
  
   # set local file permissions
+  echo "  * Set local file permissions"
   chmod 700 ~/.ssh
   chmod 644 ~/.ssh/config
   chmod 644 ~/.ssh/known_hosts
   chmod 600 ~/.ssh/id_key
   chmod 644 ~/.ssh/id_key.pub
+fi
+
+
+echo "<> Clean up old references maybe"
+git remote prune origin
+
+
+echo "<> Cloning destination git repository"
+
+if [ "$VAR_GIT_MODE" = "local" ]
+then
+  # git auth: local mode
+  echo "  * Using local authentication (no authentication)"
+
+  { # try
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "$CLONE_DIR"
+  } || { # on no such remote branch, pull default branch instead
+    echo "  * The input target branch does not already exist on the target repository. It will be created."
+    git clone --single-branch "$CLONE_DIR"
+    TARGET_BRANCH_EXISTS=false
+  }
+
+elif [ "$VAR_GIT_MODE" = "https" ]
+then
+  # git auth: https mode
+  echo "  * Using HTTPS authentication with GitHub personal access token"
+
+  # username/password
+  { # try
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+  } || { # on no such remote branch, pull default branch instead
+    echo "  * The input target branch does not already exist on the target repository. It will be created."
+    git clone --single-branch "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    TARGET_BRANCH_EXISTS=false
+  }
+
+elif [ "$VAR_GIT_MODE" = "ssh" ]
+then
+  # git auth: ssh mode
+  echo "  * Using SSH private deploy key"
 
   { # try
     git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
   } || { # on no such remote branch, pull default branch instead
-    echo "The input target branch does not already exist on the target repository. It will be created."
+    echo "  * The input target branch does not already exist on the target repository. It will be created."
     git clone --single-branch "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
     TARGET_BRANCH_EXISTS=false
   }
+
 fi
 
+echo "  * Contents of cloned directory at ${CLONE_DIR}"
 ls -la "$CLONE_DIR"
+
 
 echo "Copying files to git repo. Invisible files must be handled differently than visible files."
 # Include dot files for source filepath
