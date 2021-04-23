@@ -37,13 +37,28 @@ echo "Cloning destination git repository"
 git config --global user.email "$INPUT_AUTHOR_EMAIL"
 git config --global user.name "$INPUT_AUTHOR"
 # Clone branch matching the target branch name or default branch (master, main, etc)
-{ # try
-  git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "https://$INPUT_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
-} || { # on no such remote branch, pull default branch instead
-  echo "The input target branch does not already exist on the target repository. It will be created."
-  git clone --single-branch "https://$INPUT_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
-  TARGET_BRANCH_EXISTS=false
-}
+if [ -z "$INPUT_SSH_KEY" ]; then
+  # username/password
+  { # try
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "https://$INPUT_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+  } || { # on no such remote branch, pull default branch instead
+    echo "The input target branch does not already exist on the target repository. It will be created."
+    git clone --single-branch "https://$INPUT_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    TARGET_BRANCH_EXISTS=false
+  }
+else
+  # ssh key
+  echo "$INPUT_SSH_KEY" > id_key
+  export GIT_SSH_COMMAND="ssh -i $(pwd)/id_key"
+  
+  { # try
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+  } || { # on no such remote branch, pull default branch instead
+    echo "The input target branch does not already exist on the target repository. It will be created."
+    git clone --single-branch "git@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    TARGET_BRANCH_EXISTS=false
+  }
+fi
 
 ls -la "$CLONE_DIR"
 
