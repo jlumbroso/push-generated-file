@@ -54,7 +54,7 @@ else
   ssh-keygen -y -f ~/.ssh/id_key > ~/.ssh/id_key.pub
   echo "Public key to be used: $(cat ~/.ssh/id_key.pub)"
   
-  export GIT_SSH_COMMAND="ssh -vvv -i ~/.ssh/id_key -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts -o BatchMode=yes"
+  export GIT_SSH_COMMAND="ssh -i ~/.ssh/id_key -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts -o BatchMode=yes"
   echo "GIT_SSH_COMMAND=$GIT_SSH_COMMAND"
   
   # known hosts
