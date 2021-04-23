@@ -2,6 +2,22 @@
 
 A github action. Generate a file in your action then use this action to push it to a folder in another repository. You have to have permssion to push to that repository.
 
+TODO:
+- clean-up
+- document SSH functionality
+- better defaults
+- ability to delete existing branch
+- https://www.freecodecamp.org/news/how-to-delete-a-git-branch-both-locally-and-remotely/
+- also see: https://github.com/rayluo/github-pages-overwriter/blob/dev/action.yml
+- use `rsync` instead of `mv` if branch exists to avoid problem when merging folders
+- https://unix.stackexchange.com/questions/127712/merging-folders-with-mv/127715
+
+Ideas:
+- have recommendations about HTTP problems? with protocol and/or buffer size?
+- https://stackoverflow.com/questions/59282476/error-rpc-failed-curl-92-http-2-stream-0-was-not-closed-cleanly-protocol-erro
+- describe that main motivation for SSH is more robust I/O?
+- tutorial to add deploy keys (generation, upload to repo as deploy key, upload to account or organization as secret, specify in parameters)
+
 ## Original work
 - Forked from https://github.com/cpina/github-action-push-to-another-repository which, at the time, deleted the files in a target repository, then pushed a generated file into that blank repository.
 - Edits were made based on https://github.com/dmnemec/copy_file_to_another_repo_action which, at the time, pushed a copy of an already existing file to a directory in a target repository.
