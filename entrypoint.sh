@@ -17,8 +17,8 @@ echo ""
 
 
 # Work variables
-TARGET_BRANCH_EXISTS=true
-CLONE_DIR="$(mktemp -d)"
+VAR_TARGET_BRANCH_EXISTS=true
+VAR_CLONE_DIR="$(mktemp -d)"
 VAR_GIT_MODE="https"
 
 
@@ -163,11 +163,11 @@ then
   echo "  * Using local authentication (no authentication)"
 
   { # try
-    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "$CLONE_DIR"
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "${VAR_CLONE_DIR}"
   } || { # on no such remote branch, pull default branch instead
     echo "  * The input target branch does not already exist on the target repository. It will be created."
-    git clone --single-branch "$CLONE_DIR"
-    TARGET_BRANCH_EXISTS=false
+    git clone --single-branch "${VAR_CLONE_DIR}"
+    VAR_TARGET_BRANCH_EXISTS=false
   }
 
 elif [ "$VAR_GIT_MODE" = "https" ]
@@ -177,11 +177,11 @@ then
 
   # username/password
   { # try
-    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "${VAR_CLONE_DIR}"
   } || { # on no such remote branch, pull default branch instead
     echo "  * The input target branch does not already exist on the target repository. It will be created."
-    git clone --single-branch "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
-    TARGET_BRANCH_EXISTS=false
+    git clone --single-branch "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "${VAR_CLONE_DIR}"
+    VAR_TARGET_BRANCH_EXISTS=false
   }
 
 elif [ "$VAR_GIT_MODE" = "ssh" ]
@@ -190,42 +190,42 @@ then
   echo "  * Using SSH private deploy key"
 
   { # try
-    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com:$INPUT_DESTINATION_REPO.git" "${VAR_CLONE_DIR}"
   } || { # on no such remote branch, pull default branch instead
     echo "  * The input target branch does not already exist on the target repository. It will be created."
-    git clone --single-branch "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
-    TARGET_BRANCH_EXISTS=false
+    git clone --single-branch "git@github.com:$INPUT_DESTINATION_REPO.git" "${VAR_CLONE_DIR}"
+    VAR_TARGET_BRANCH_EXISTS=false
   }
 
 fi
 
-echo "  * Contents of cloned directory at ${CLONE_DIR}"
-ls -la "$CLONE_DIR"
+echo "  * Contents of cloned directory at ${VAR_CLONE_DIR}"
+ls -la "${VAR_CLONE_DIR}"
 
 
 echo "Copying files to git repo. Invisible files must be handled differently than visible files."
 # Include dot files for source filepath
-mkdir -p $CLONE_DIR/$INPUT_DESTINATION_FOLDER
+mkdir -p ${VAR_CLONE_DIR}/$INPUT_DESTINATION_FOLDER
 
 if [ $(find "$INPUT_SOURCE_FILE_PATH" -type f | wc -l) -gt 0 ]; then
-  ##cp -r "$INPUT_SOURCE_FILE_PATH"/* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
-  mv "$INPUT_SOURCE_FILE_PATH"/* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
+  ##cp -r "$INPUT_SOURCE_FILE_PATH"/* "${VAR_CLONE_DIR}/$INPUT_DESTINATION_FOLDER"
+  mv "$INPUT_SOURCE_FILE_PATH"/* "${VAR_CLONE_DIR}/$INPUT_DESTINATION_FOLDER"
 else
   echo "WARNING: No visible files exist"
 fi
 invisible_exists=false
 if test -f "$INPUT_SOURCE_FILE_PATH"/.??*; then
-  ##cp -r "$INPUT_SOURCE_FILE_PATH"/.??* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
-  mv "$INPUT_SOURCE_FILE_PATH"/.??* "$CLONE_DIR/$INPUT_DESTINATION_FOLDER"
+  ##cp -r "$INPUT_SOURCE_FILE_PATH"/.??* "${VAR_CLONE_DIR}/$INPUT_DESTINATION_FOLDER"
+  mv "$INPUT_SOURCE_FILE_PATH"/.??* "${VAR_CLONE_DIR}/$INPUT_DESTINATION_FOLDER"
 else
   echo "WARNING: No invisible/hidden (dot) files exist"
 fi
 
-cd "$CLONE_DIR"
+cd "${VAR_CLONE_DIR}"
 ls -la
 
 # Create branch locally if it doesn't already exist locally
-if [ "$TARGET_BRANCH_EXISTS" = false ] ; then
+if [ "${VAR_TARGET_BRANCH_EXISTS}" = false ] ; then
   git checkout -b "$INPUT_TARGET_BRANCH"
 fi
 
