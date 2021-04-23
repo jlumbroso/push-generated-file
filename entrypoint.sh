@@ -40,19 +40,19 @@ echo "Cloning destination git repository"
 git config --global user.email "$INPUT_AUTHOR_EMAIL"
 git config --global user.name "$INPUT_AUTHOR"
 # Clone branch matching the target branch name or default branch (master, main, etc)
-if [ -z "$INPUT_SSH_KEY" ]; then
+if [ -z "$INPUT_AUTH_SSH_KEY" ]; then
   # username/password
   { # try
-    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "https://$INPUT_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
   } || { # on no such remote branch, pull default branch instead
     echo "The input target branch does not already exist on the target repository. It will be created."
-    git clone --single-branch "https://$INPUT_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
+    git clone --single-branch "https://$INPUT_AUTH_GITHUB_TOKEN@github.com/$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
     TARGET_BRANCH_EXISTS=false
   }
 else
   # ssh key
   mkdir -p ~/.ssh
-  echo "$INPUT_SSH_KEY" > ~/.ssh/id_key
+  echo "$INPUT_AUTH_SSH_KEY" > ~/.ssh/id_key
   chmod u=rw,go= ~/.ssh/id_key
   ssh-keygen -y -f ~/.ssh/id_key > ~/.ssh/id_key.pub
   echo "Public key to be used: $(cat ~/.ssh/id_key.pub)"

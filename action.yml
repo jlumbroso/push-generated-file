@@ -1,33 +1,40 @@
-name: 'Push generated file'
-description: 'Push a generated file to another repository'
+name: "Push generated file"
+description: "Push a generated file to another repository"
 inputs:
-  token:
-    description: 'Github token for this action (you have to create this in your settings).'
-    required: true
+
+  auth_github_token:
+    description: "[Optional] GitHub (Personal Access) Token to access the repository on which to push the files."
+    required: false
+    default: ""
+  
+  auth_ssh_key:
+    description: "[Optional] SSH private key pair of the public deploy key to access the repository on which to push the files."
+    required: false
+    default: ""
+
   source_file_path:
-    description: '"Path" to generated file. Example: path/to/file.md'
+    description: "'Path' to generated file. Example: path/to/file.md"
     required: true
   destination_repo:
-    description: 'Repository to push file to. Example: some_user/some_repo'
+    description: "Repository to push file to. Example: some_user/some_repo"
     required: true
   destination_folder:
-    description: 'Folder or folders to create or use in destination repository.'
+    description: "Folder or folders to create or use in destination repository."
     required: true
   target_branch:
-    description: '[Optional] set target branch name for the destination repository. Default is "main".'
+    description: "[Optional] set target branch name for the destination repository. Default is `main'."
     required: false
+  
   author:
     description: "[Optional] Name of the commit's author. Default is user name of account doing action."
     required: false
   author_email:
-    description: '[Optional] Email for the commit. Default is author@no-reply...'
+    description: "[Optional] Email for the commit. Default is author@no-reply..."
     required: false
-  ssh_key:
-    description: '[Optional] SSH private key to authenticate against the repo'
-    required: false
+  
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "docker"
+  image: "Dockerfile"
 branding:
-  icon: 'git-commit'
-  color: 'green'
+  icon: "git-commit"
+  color: "green"
