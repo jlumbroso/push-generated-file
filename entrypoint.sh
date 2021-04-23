@@ -39,21 +39,28 @@ fi
 
 # Determine whether we are in HTTPS or SSH mode
 echo "<> Detecting authentication mode"
-if [ ! -z "$INPUT_AUTH_SSH_KEY" ]
+if [ -z "${INPUT_DESTINATION_REPO}" ]
 then
-  VAR_GIT_MODE="ssh"
-  echo "SSH private key detected."
-  echo "=> Selecting 'ssh' authentication mode."
+  VAR_GIT_MODE="local"
+  echo "No destination repository was provided."
+  echo "=> Defaulting to 'local' authentication mode."
 else
-  if [ -z "$INPUT_AUTH_GITHUB_TOKEN"]
+  if [ ! -z "$INPUT_AUTH_SSH_KEY" ]
   then
-    VAR_GIT_MODE="local"
-    echo "No SSH private key and no GitHub personal access token provided!"
-    echo "=> Defaulting to 'local' authentication mode."
+    VAR_GIT_MODE="ssh"
+    echo "SSH private key detected."
+    echo "=> Selecting 'ssh' authentication mode."
   else
-    VAR_GIT_MODE="https"
-    echo "GitHub Personal Access Token detected."
-    echo "=> Selecting 'https' authentication mode."
+    if [ -z "$INPUT_AUTH_GITHUB_TOKEN"]
+    then
+      VAR_GIT_MODE="local"
+      echo "No SSH private key and no GitHub personal access token provided!"
+      echo "=> Defaulting to 'local' authentication mode."
+    else
+      VAR_GIT_MODE="https"
+      echo "GitHub Personal Access Token detected."
+      echo "=> Selecting 'https' authentication mode."
+    fi
   fi
 fi
 

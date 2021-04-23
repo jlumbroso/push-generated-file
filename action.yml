@@ -14,13 +14,19 @@ inputs:
 
   source_file_path:
     description: "'Path' to generated file. Example: path/to/file.md"
-    required: true
+    required: false
+    default: "."
+
   destination_repo:
     description: "Repository to push file to. Example: some_user/some_repo"
-    required: true
+    required: false
+    default: ""
+
   destination_folder:
     description: "Folder or folders to create or use in destination repository."
-    required: true
+    required: false
+    default: "."
+
   target_branch:
     description: "[Optional] set target branch name for the destination repository."
     required: false
@@ -29,6 +35,7 @@ inputs:
   author:
     description: "[Optional] Name of the commit's author. Default is user name of account doing action."
     required: false
+    
   author_email:
     description: "[Optional] Email for the commit. Default is author@no-reply..."
     required: false
