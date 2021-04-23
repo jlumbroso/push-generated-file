@@ -51,6 +51,10 @@ else
   echo "$INPUT_SSH_KEY" > id_key
   export GIT_SSH_COMMAND="ssh -i $(pwd)/id_key"
   
+  # known hosts
+  touch ~/.ssh/known_hosts
+  ssh-keyscan github.com >> ~/.ssh/known_hosts
+  
   { # try
     git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
   } || { # on no such remote branch, pull default branch instead
