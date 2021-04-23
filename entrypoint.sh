@@ -54,12 +54,13 @@ else
   ssh-keygen -y -f ~/.ssh/id_key > ~/.ssh/id_key.pub
   echo "Public key to be used: $(cat ~/.ssh/id_key.pub)"
   
-  export GIT_SSH_COMMAND="ssh -vvv -i ~/.ssh/id_key -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts"
+  export GIT_SSH_COMMAND="ssh -vvv -i ~/.ssh/id_key -o IdentitiesOnly=yes -o UserKnownHostsFile=~/.ssh/known_hosts -o BatchMode=yes"
   echo "GIT_SSH_COMMAND=$GIT_SSH_COMMAND"
   
   # known hosts
   touch ~/.ssh/known_hosts
   ssh-keyscan github.com >> ~/.ssh/known_hosts
+  cat ~/.ssh/known_hosts
   
   # set local file permissions
   chmod 700 ~/.ssh
