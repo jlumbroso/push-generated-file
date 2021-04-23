@@ -26,6 +26,9 @@ TARGET_BRANCH_EXISTS=true
 
 CLONE_DIR=$(mktemp -d)
 
+echo "Git version"
+git --version
+
 echo "Using HTTP 1.1"
 git config --global http.version HTTP/1.1
 
