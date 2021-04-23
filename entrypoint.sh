@@ -60,6 +60,9 @@ else
   touch ~/.ssh/known_hosts
   ssh-keyscan github.com >> ~/.ssh/known_hosts
   
+  # set permissions
+  chmod u=rw,go= ~/.ssh/id_key ~/.ssh/id_key.pub ~/.ssh/known_hosts
+  
   { # try
     git clone --single-branch --branch "$INPUT_TARGET_BRANCH" "git@github.com:$INPUT_DESTINATION_REPO.git" "$CLONE_DIR"
   } || { # on no such remote branch, pull default branch instead
