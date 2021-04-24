@@ -123,10 +123,37 @@ if [ "$TARGET_BRANCH_EXISTS" = false ] ; then
 fi
 
 echo "Adding git commit"
+
+COMMITS_BY_PUSH=2
+FILES_BY_COMMIT=50
+ADDED=0
+COMMIT_ID=0
+find . -type f | while read file
+do
+  git add "$file"
+  ADDED=$((ADDED+1))
+  if [ $((ADDED % FILES_BY_COMMIT)) -eq 0 ]
+  then
+    echo "Attempting a commit (added: ${ADDED}, files_by_commit:${FILES_BY_COMMIT})"
+    
+    git diff-index --quiet HEAD || git commit --message "Update (${COMMIT_ID}) from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA" && COMMIT_ID+=$((COMMIT_ID+1))
+  fi
+  if [ $((COMMIT_ID % COMMITS_BY_PUSH)) -eq 0 ]
+  then
+    echo "Attempting a push (commits: ${COMMIT_ID}, commits_by_push:${COMMITS_BY_PUSH})"
+    git push origin --set-upstream "$INPUT_TARGET_BRANCH"
+  fi
+done
+#commit remaining
 git add .
 git status
 # git diff-index to avoid an error when there are no changes to commit
-git diff-index --quiet HEAD || git commit --message "Update from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
+git diff-index --quiet HEAD || git commit --message "Update remaining files from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
+
+##git add .
+##git status
+# git diff-index to avoid an error when there are no changes to commit
+##git diff-index --quiet HEAD || git commit --message "Update from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
 
 echo "Pushing git commit. Create branch if none exists."
 # --set-upstream also creates the branch if it doesn't already exist in the destination repository
