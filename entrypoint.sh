@@ -128,9 +128,9 @@ COMMITS_BY_PUSH=2
 FILES_BY_COMMIT=50
 ADDED=0
 COMMIT_ID=0
-find . -type f | while read file
+find . -not -iwholename '*.git/*' -type f | while read file
 do
-  git add "$file"
+  git add "$file" || continue
   ADDED=$((ADDED+1))
   if [ $((ADDED % FILES_BY_COMMIT)) -eq 0 ]
   then
