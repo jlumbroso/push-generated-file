@@ -136,7 +136,7 @@ do
   then
     echo "Attempting a commit (added: ${ADDED}, files_by_commit:${FILES_BY_COMMIT})"
     
-    git diff-index --quiet HEAD || git commit --message "Update (${COMMIT_ID}) from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA" && COMMIT_ID+=$((COMMIT_ID+1))
+    git diff-index --quiet HEAD || git commit --message "Update (${COMMIT_ID}) from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA" && COMMIT_ID=$((COMMIT_ID+1))
   fi
   if [ $((COMMIT_ID % COMMITS_BY_PUSH)) -eq 0 ]
   then
