@@ -11,12 +11,23 @@ TODO:
 - also see: https://github.com/rayluo/github-pages-overwriter/blob/dev/action.yml
 - use `rsync` instead of `mv` if branch exists to avoid problem when merging folders
 - https://unix.stackexchange.com/questions/127712/merging-folders-with-mv/127715
+- https://unix.stackexchange.com/a/127713/60849
+
+Documentation on SSH:
+- Client side https://docs.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+- Deploy key repo side https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys
 
 Ideas:
 - have recommendations about HTTP problems? with protocol and/or buffer size?
 - https://stackoverflow.com/questions/59282476/error-rpc-failed-curl-92-http-2-stream-0-was-not-closed-cleanly-protocol-erro
 - describe that main motivation for SSH is more robust I/O?
 - tutorial to add deploy keys (generation, upload to repo as deploy key, upload to account or organization as secret, specify in parameters)
+
+Also:
+- https://github.com/dawidd6/action-delete-branch
+- https://github.com/peaceiris/actions-gh-pages
+- https://github.com/rayluo/github-pages-overwriter
+- https://github.com/JamesIves/github-pages-deploy-action
 
 ## Destination repository and branch
 

@@ -24,6 +24,10 @@ VAR_GIT_MODE="https"
 
 echo "<> Start"
 echo "<> Processing input parameters"
+
+# For information on GitHub Actions environment variables
+# See https://docs.github.com/en/actions/reference/environment-variables
+
 if [ -z "$INPUT_AUTHOR" ]
 then
   INPUT_AUTHOR="$GITHUB_ACTOR"
@@ -131,6 +135,7 @@ then
   echo "  - Creating SSH config file"
   # See https://bengsfort.github.io/articles/fixing-git-push-pull-timeout/
   # See https://docs.gitlab.com/ee/topics/git/troubleshooting_git.html#check-your-ssh-configuration
+  # See https://stackoverflow.com/a/7875614/408734
   cat > ~/.ssh/config <<EOL
 Host *
   ServerAliveInterval 60
@@ -239,6 +244,9 @@ if [ "${VAR_TARGET_BRANCH_EXISTS}" = false ] ; then
 fi
 
 echo "<> Preparing commits"
+
+# We commit/push in package to avoid problems with really large commits/pushes
+# See https://stackoverflow.com/a/66812946/408734
 
 COMMITS_BY_PUSH=2
 FILES_BY_COMMIT=50
