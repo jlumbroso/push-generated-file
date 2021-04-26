@@ -11,7 +11,7 @@ echo "PUSH TO REPO GITHUB ACTION"
 echo "=========================="
 echo ""
 echo "Git version: $(git --version)"
-echo "SSH version: $(ssh --version)"
+echo "SSH version: $(ssh -v localhost 2>&1 | head -1)"
 echo ""
 echo ""
 
