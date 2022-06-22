@@ -260,7 +260,7 @@ COMMIT_ID=0
 TOTAL_FILE_COUNT=$(find . -not -ipath '*.git/*' -type f | wc -l)
 ESTIMATED_TOTAL_COMMIT_COUNT=$((TOTAL_FILE_COUNT / FILES_BY_COMMIT))
 
-find . -not -ipath '*.git/*' -type f | while read file
+find . -not -ipath '*.git/*' -type f | sort -n | while read file
 do
   # if the git add is unsuccessful, skip to next loop
   git add "$file" || continue
