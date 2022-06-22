@@ -298,6 +298,8 @@ done
 
 echo "<> Commit and push any remaining files"
 git add .
+# don't forget hidden files (NOTE: should be an option?)
+git add .*
 git status
 git diff-index --quiet HEAD || git commit --message "Update remaining files from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
 git push origin --set-upstream "$INPUT_TARGET_BRANCH"
