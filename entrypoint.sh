@@ -257,6 +257,9 @@ echo "   [commits_by_push: ${COMMITS_BY_PUSH}, files_by_commit: ${FILES_BY_COMMI
 ADDED=0
 COMMIT_ID=0
 
+TOTAL_FILE_COUNT=$(find . -not -ipath '*.git/*' -type f | wc -l)
+ESTIMATED_TOTAL_COMMIT_COUNT=$((TOTAL_FILE_COUNT / FILES_BY_COMMIT))
+
 find . -not -ipath '*.git/*' -type f | while read file
 do
   # if the git add is unsuccessful, skip to next loop
@@ -272,7 +275,7 @@ do
     
     # git diff-index to avoid an error when there are no changes to commit
     git diff-index --quiet HEAD || {
-      git commit --message "Update (${COMMIT_ID}) from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
+      git commit --message "Update (${COMMIT_ID}/${ESTIMATED_TOTAL_COMMIT_COUNT}) from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
       COMMIT_ID=$((COMMIT_ID+1))
     }
   fi
