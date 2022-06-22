@@ -1,15 +1,13 @@
-
 # See https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
 
 name: "Push generated file"
 description: "Push a generated file to another repository"
 inputs:
-
   auth_github_token:
     description: "[Optional] GitHub (Personal Access) Token to access the repository on which to push the files."
     required: false
     default: ""
-  
+
   auth_ssh_key:
     description: "[Optional] SSH private key pair of the public deploy key to access the repository on which to push the files."
     required: false
@@ -34,15 +32,25 @@ inputs:
     description: "[Optional] set target branch name for the destination repository."
     required: false
     default: "main"
-  
+
   author:
     description: "[Optional] Name of the commit's author. Default is user name of account doing action."
     required: false
-    
+
   author_email:
     description: "[Optional] Email for the commit. Default is author@no-reply..."
     required: false
-  
+
+  files_by_commit:
+    description: "[Optional] Number of files grouped in a given commit."
+    required: false
+    default: "50"
+
+  commits_by_push:
+    description: "[Optional] Number of commits grouped in each push to the remote."
+    required: false
+    default: "2"
+
 runs:
   using: "docker"
   image: "Dockerfile"

@@ -248,8 +248,8 @@ echo "<> Preparing commits"
 # We commit/push in package to avoid problems with really large commits/pushes
 # See https://stackoverflow.com/a/66812946/408734
 
-COMMITS_BY_PUSH=2
-FILES_BY_COMMIT=50
+COMMITS_BY_PUSH=${INPUT_COMMITS_BY_PUSH:-2}
+FILES_BY_COMMIT=${INPUT_FILES_BY_COMMIT:-50}
 
 echo "   [commits_by_push: ${COMMITS_BY_PUSH}, files_by_commit: ${FILES_BY_COMMIT}]"
 
