@@ -280,7 +280,7 @@ do
     
     # git diff-index to avoid an error when there are no changes to commit
     git diff-index --quiet HEAD || {
-      git commit --message "Update (${COMMIT_ID}/${ESTIMATED_TOTAL_COMMIT_COUNT}) from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
+      git commit --message "Update ($((COMMIT_ID+1))/${ESTIMATED_TOTAL_COMMIT_COUNT}) from https://github.com/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
       COMMIT_ID=$((COMMIT_ID+1))
     }
   fi
