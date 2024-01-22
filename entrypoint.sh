@@ -130,7 +130,8 @@ then
   touch ~/.ssh/known_hosts
   ssh-keyscan github.com >> ~/.ssh/known_hosts
   ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
-  ssh-keyscan bitbucket.com >> ~/.ssh/known_hosts
+  # FIXME: bitbucket.com seems not to be working
+  ##ssh-keyscan bitbucket.com >> ~/.ssh/known_hosts
   cat ~/.ssh/known_hosts
   
   # ssh config to avoid push timeout
