@@ -1,0 +1,4 @@
+.DS_Store
+*.log
+combine.py
+prompt*.txt
