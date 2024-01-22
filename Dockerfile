@@ -16,9 +16,9 @@ RUN apk add --no-cache bind-tools \
   # GitLab known hosts
   && ssh-keyscan gitlab.com >> /etc/ssh/ssh_known_hosts \
   && dig -t a +short gitlab.com | grep ^[0-9] | xargs -r -n1 ssh-keyscan >> /etc/ssh/ssh_known_hosts \
-  # BitBucket known hosts
-  && ssh-keyscan bitbucket.com >> /etc/ssh/ssh_known_hosts \
-  && dig -t a +short bitbucket.com | grep ^[0-9] | xargs -r -n1 ssh-keyscan >> /etc/ssh/ssh_known_hosts \
+  # BitBucket known hosts (FIXME: seems to be causing issues, so commenting out for now)
+  ##&& ssh-keyscan bitbucket.com >> /etc/ssh/ssh_known_hosts \
+  ##&& dig -t a +short bitbucket.com | grep ^[0-9] | xargs -r -n1 ssh-keyscan >> /etc/ssh/ssh_known_hosts \
   && apk del bind-tools
 
 COPY entrypoint.sh /entrypoint.sh
